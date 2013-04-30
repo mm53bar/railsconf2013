@@ -2,6 +2,7 @@
 
 ### Stefan Wintermeyer
 ### @wintermeyer
+### Slides: https://speakerdeck.com/wintermeyer/cache-equals-cash-1
 
 * impact of slow pages
   * web search delay experiment by @igrigorik of google
