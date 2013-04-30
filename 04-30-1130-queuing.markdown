@@ -1,0 +1,45 @@
+# Make Your Application Snappier With Asynchronous Workers
+
+### Dave Kapp
+
+* Good things to have workers do
+  * Call external APIs
+  * Number crunching
+  * Document generation
+  * Sending email
+  * Geolocation
+
+* recommend to create queues by type i.e. emails
+* including Rails stuff in jobs makes for larger memory footprint & loading speed
+* to load rails for resque workers:
+  * lib/tasks/resque.rake
+  * make resque:setup task dependent on environment i.e. => :environment
+* put config stuff in an intializer (resque.rb)
+* when calling resque.enqueue, args are serialized as JSON
+  * try to use simple values rather than larger objects
+
+* logging is important with resque
+* Resque.logger
+* by default it logs to STDOUT
+* can be updated to write to Rails logs
+* having a separate set of logs for workers is recommended
+* setup args VERBOSE AND VVERBOSE are helpful in dev.  Use them.
+* remember that logging in prod is buffered so might look like it's not updating
+
+* failed jobs are added to a 'failure' queue by default
+* can be restarted but it's a little awkward
+* support is included to send failure to airbrake
+* ??? Do you really want to restart the job?
+  * might not make sense
+
+### Troubleshooting
+
+* workers must be restarted to pick up on code changes
+* schema changes while workers are running will confuse them
+* it's easy to disable enqueuing sot hat things run inline
+  * 'Resque.inline=true'
+  * Can be used to test even if redis isn't available
+
+
+
+
