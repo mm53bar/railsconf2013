@@ -1,0 +1,11 @@
+# Controversy
+
+### Thomas Meeks
+### http://thomasmeeks.com/controversy
+
+Dev at codeschool?
+
+Not a lot of notes because the talk closely followed the slides.
+
+Main idea was that you should document all public methods (using something like YARD), keep your controllers and views so simple that you don't need to test them, dump unit tests and tdd because they're expensive (in a test lines vs. code lines ratio) and jump into integration tests (because they're cheaper from the ratio perspective).  However, don't use capybara because it's slow and difficult to set up.  He prefers using VCR for integration tests.
+
