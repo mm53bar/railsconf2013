@@ -1,0 +1,90 @@
+# Postgres - The Best Tool You're Already Using
+
+### Adam Sanderson
+### @adamsanderson
+### http://github.com/adamsanderson/railsconf2013
+
+Most stuff in the presentation can be used in <4.0, but Rails 4 makes it easier.
+
+### Tagging
+
+* create them as a `text[]` field
+* heads up -> use type text rather than type array
+  * less type casting in postgres
+* use with @> (contains) or && (overlaps) operators
+
+SQL:
+
+    select name, tags from hedgehogs where tags && ARRAY['spiny', 'prickly'];
+
+Brings back any hedgehog records that are tagged either 'spiny' or 'prickly'.
+
+ActiveRecord:
+
+    Hedgehog.where "tags && ARRAY[?]", ['spiny', 'prickly']
+
+or, using scopes:
+
+    class Hedgehog < ActiveRecord::Base
+      scope :any_tags, -> (* tags){where('tags && ARRAY[?]', tags)}
+    end
+
+    Hedgehog.any_tags('spiny', 'large').where('age >?', 4)
+
+### Hierarchies
+
+Modelling tree hierarchies and finding things like depth, children or parents.
+
+Use materialized Path in SQL with array of integers.  It's the set of id's to descend through the hierarchy to the current record.
+
+* means that depth is simply the length of the integer array
+* to find children, just search for any records that have the parent's id in their path array
+* to find the parents, just search for any records that have a path that contain the child's path
+* in ActiveRecord 4, arrays are exposed as ruby arrays
+
+ActiveRecord:
+
+    class Club < ActiveRecord::Base
+      def children
+        Club.where('path && ARRAY[?]', self.id)
+      end
+    end
+
+### Custom Data
+
+aka sparse data
+
+Where users want to record their own unique data but you don't want to build a column for it.
+
+Hstore!
+
+* Not shipped by default but exists in contrib modules. Needs a special migration too.
+* Default schema format in Rails4 does not support extensions.
+  * Updated config/application.rb to use the SQL schema format
+* In AR4, be sure to specify an empty hstore by default otherwise it will be defined as null
+* see slides to get AR4 code for setting up scopes that will check if the hstore values are defined
+* note that hstores are always stored as strings
+
+### Full-text search
+
+* two important data types
+* `tsvector` reprensets the text to be searched
+* `tsquery` represensts the query
+* `to_tsvector` and `to_tsquery` will create normalized versions of those strings
+* will remove stop words, removes common endings of words (stemming)
+
+  `V @@ Q` - Searches V for Q
+
+* tsquery only supports wildcards at the end of a term
+* never pass user input directly to to_tsquery because it has lots of words and terms it doesn't allow
+* for AR4, it's easy to create a scope that does it.  But you'll need to write a sanitize_query function to clean your input
+* Don't need a full-text search index to do full text searching, but it does make it faster
+* Use a `gin` index for multivalued columns like text[] or ts_vectors
+* Since you're indexing a function call, you need to use it the same way in every call
+
+
+
+
+
+
+
