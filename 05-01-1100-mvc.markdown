@@ -1,0 +1,15 @@
+# Properly-Factored MVC
+
+### Katrina Owen
+### Jeff Casimir
+### http://railsconftutorials.com/sessions/factored_mvc.html
+
+Rails controllers create an anonymous class (created on the fly) called ViewContext. It then looks at itself and queries out all of the instance variables in the controller.  It adds those instance variables to the ViewContext so that they're available to the View.
+
+"The premise that a controller should be concise is a goal worth pursuing".
+
+"A controller action that has more than seven lines of code is a sign that it is doing too much."
+
+The goal of refactoring - to increase the code's ability to change over time
+
+
